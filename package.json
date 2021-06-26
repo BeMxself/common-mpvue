@@ -38,7 +38,7 @@
         "rimraf": "^2.6.2",
         "tslint": "^5.9.1",
         "tslint-eslint-rules": "^5.1.0",
-        "typescript": "^2.8.1",
+        "typescript": "^3.9.7",
         "vue": "^2.5.16"
     },
     "dependencies": {

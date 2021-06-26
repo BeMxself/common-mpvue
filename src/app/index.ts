@@ -99,7 +99,7 @@ export default function wrap(App, config: AppConfig, props?: BaseKV) {
             }
         },
         debug: {
-            configurable: false,
+            configurable: true,
             enumerable: false,
             get: function() {
                 return !isProduct || this.__config.debug;
