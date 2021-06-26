@@ -105,13 +105,13 @@ class RequestManager {
     wrapRequest(req, promise: { resolve; reject }, opts: RequestOptions = {}) {
         const app = getApp();
         if (app.debug) {
-            console.trace('request', req);
+            console.debug('request', req);
         }
         return wxp
             .request(req)
             .then(res => {
                 if (app.debug) {
-                    console.trace('response', res);
+                    console.debug('response', res);
                 }
                 if (res && Number(res.statusCode) === 200) {
                     const loginCode = res.data.loginCode;
