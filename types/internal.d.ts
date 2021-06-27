@@ -53,6 +53,20 @@ declare class ShadowRequest extends ChainableRequest {
      * @param data
      */
     POST(url: string, data?: BaseKV): Promise<any>;
+
+    /**
+     * 发起PUT请求
+     * @param url
+     * @param data
+     */
+    PUT(url: string, data?: BaseKV): Promise<any>;
+
+    /**
+     * 发起DELETE请求
+     * @param url
+     * @param params
+     */
+    DELETE(url: string, params?: BaseKV): Promise<any>;
 }
 
 declare class ChainableRequest {
@@ -99,6 +113,11 @@ declare class ChainableRequest {
      * 配置请求如果POST则形式为application/x-www-form-urlencoded
      */
     form(): ShadowRequest;
+
+    /**
+     * 配置暴露完整响应对象
+     */
+    exposeFull(enable?: boolean): ShadowRequest;
 }
 
 export interface GlobalStoreState {
