@@ -1,4 +1,5 @@
 export interface RequestOptions {
+    exposeFull?: boolean;
     isCustomRequest?: boolean;
 
     /**

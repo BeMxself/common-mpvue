@@ -5,7 +5,6 @@ import { RequestOptions } from '../../types/option';
 import { BaseKV } from '../../types/general';
 import { pureAssign, addUrlQuery } from '../utils';
 import wxp from '../wxp';
-import SystemEvent from '../enum/event';
 
 interface RequestQueueItem {
     promise: { resolve; reject };
@@ -113,31 +112,19 @@ class RequestManager {
                 if (app.debug) {
                     console.debug('response', res);
                 }
-                if (res && Number(res.statusCode) === 200) {
-                    const loginCode = res.data.loginCode;
-                    if (
-                        loginCode !== null &&
-                        loginCode !== undefined &&
-                        Number(loginCode) !== 200 &&
-                        opts.auth
-                    ) {
-                        if (opts.checkToken) {
-                            // 登录失效
-                            if (app.debug) {
-                                console.warn('Warn: 登陆态失效，正在进行登出');
-                            }
-
-                            // 发送logout事件
-                            app.emitter.emit(SystemEvent.LOGOUT, {
-                                msg: '登陆态失效，自动登出'
-                            });
-
-                            app.setToken('');
-                        }
+                const code = Number((res && res.statusCode) || 0);
+                if (code >= 200 && code < 300) {
+                    if (opts.exposeFull) {
+                        promise.resolve(res);
+                    } else {
+                        promise.resolve(res.data);
                     }
-                    promise.resolve(res.data);
                 } else {
-                    throw new Error(res.data && res.data.message ? res.data.message : res.errMsg);
+                    let error: any = new Error(
+                        res.data && res.data.message ? res.data.message : res.errMsg
+                    );
+                    error.res = res;
+                    throw error;
                 }
             })
             .catch(reason => {
@@ -375,6 +362,15 @@ class ChainableRequest extends Configurable {
         this._setReqOptions('formPost', true);
         return this as any;
     }
+
+    exposeFull(enable: boolean = true): ShadowRequest {
+        if (this instanceof Request) {
+            const shadow = new ShadowRequest(this._requestManager, { ...this._config });
+            return shadow.exposeFull(enable);
+        }
+        this._setReqOptions('exposeFull', enable);
+        return this as any;
+    }
 }
 
 class ShadowRequest extends ChainableRequest {
@@ -402,6 +398,27 @@ class ShadowRequest extends ChainableRequest {
                 data,
                 method: 'POST'
             },
+            this._reqOpts
+        );
+    }
+
+    PUT(url: string, data?: BaseKV) {
+        return (
+            this.request({
+                url,
+                data,
+                method: 'PUT'
+            }),
+            this._reqOpts
+        );
+    }
+
+    DELETE(url: string, params?: BaseKV) {
+        return (
+            this.request({
+                url: addUrlQuery(url, pureAssign({}, params)),
+                method: 'DELETE'
+            }),
             this._reqOpts
         );
     }
