@@ -403,22 +403,22 @@ class ShadowRequest extends ChainableRequest {
     }
 
     PUT(url: string, data?: BaseKV) {
-        return (
-            this.request({
+        return this.request(
+            {
                 url,
                 data,
                 method: 'PUT'
-            }),
+            },
             this._reqOpts
         );
     }
 
     DELETE(url: string, params?: BaseKV) {
-        return (
-            this.request({
+        return this.request(
+            {
                 url: addUrlQuery(url, pureAssign({}, params)),
                 method: 'DELETE'
-            }),
+            },
             this._reqOpts
         );
     }
